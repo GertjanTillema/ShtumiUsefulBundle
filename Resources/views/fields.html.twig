@@ -146,17 +146,22 @@
 
     <script type="text/javascript">
         jQuery(function(){
+            $select = jQuery("#{{ form.vars.id }}");
 
-            jQuery("#{{ form.vars.id }}").select2({
-                placeholder: "{{ empty_value }}",
+            $select.select2({
+                placeholder: {{ empty_value | json_encode | raw }},
                 minimumInputLength: 0,
                 ajax: {
                     url: '{{ path('shtumi_dependent_filtered_select2') }}',
                     dataType: 'json',
                     data: function (term, page) {
+			var basisIds = []
+			jQuery('input[name*="[{{ form.parent.offsetGet( parent_field ).vars.name }}]"]').each(function(){
+				basisIds.push($(this).val());
+			});
                         return {
                             term: term,
-                            parent_id: jQuery("#{{ form.parent.offsetGet( parent_field ).vars.id }}").val(),
+                            parent_id: basisIds,
                             entity_alias: "{{ entity_alias }}"
                         };
                     },
@@ -165,7 +170,16 @@
                     }
                 }
             });
-            jQuery("#{{ form.vars.id }}").select2('data', {{ value|raw }});
+
+            {# FIXME WTF value === 'null' #}
+            {% if value and value != 'null' %}
+            $select.select2('data', {{ value|raw }});
+            {% elseif preferred_value and preferred_text %}
+            $select.select2('data', {
+                id: {{ preferred_value | json_encode | raw }},
+                text: {{ preferred_text | json_encode | raw }}
+            });
+            {% endif %}
 
             jQuery("#{{ form.parent.offsetGet( parent_field ).vars.id }}").change(function(){
                 jQuery("#{{ form.vars.id }}").select2('data', null);

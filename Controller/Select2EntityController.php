@@ -49,14 +49,14 @@ class Select2EntityController extends Controller
 
 	    $property = $entity_inf['property'];
 
-        if ($entity_inf['case_insensitive']) {
-                $where_clause_lhs = 'WHERE LOWER(e.' . $property . ')';
-                $where_clause_rhs = 'LIKE LOWER(:like)';
-        } else {
+//        if ($entity_inf['case_insensitive']) {
+//                $where_clause_lhs = 'WHERE LOWER(e.' . $property . ')';
+//                $where_clause_rhs = 'LIKE LOWER(:like)';
+//        } else {
 
                 $where_clause_lhs = 'WHERE e.' . $property;
                 $where_clause_rhs = 'LIKE :like';
-        }
+//        }
 
         $results = $em->createQuery(
             'SELECT e as entity, e.' . $property . ' as property
